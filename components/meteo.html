@@ -1,0 +1,167 @@
+<main id="meteo-city" ref="compMeteo">
+    <header>
+        <router-link to="/">
+            <svg id="loupe" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </router-link>
+        <section id="head-heure">
+            <span>
+                {{ heure_maint }} 
+            </span>
+        </section>
+        <div id="btn-unites" @click="toggleMetric" v-if="resultat">
+            <span :class="{ 'unites-active': metrique }">Mét.</span>
+            <span class="separateur">|</span>
+            <span :class="{ 'unites-active': imperial }">Imp.</span>
+        </div>
+    </header>
+
+    <div class="flex flex-column" v-if="resultat">
+
+        <section id="meteo-ville">
+            <span class="nom-ville">
+                {{ ville }}
+            </span>
+            <span class="nom-pays">
+                {{ pays }}
+            </span>
+        </section>
+
+        <section id="meteo-titre" class="titre-date">
+            <span>
+                Conditions actuelles
+            </span>
+            <span class="seperateur"> | </span>
+            <span>
+                {{ date_ajd }}
+            </span>
+        </section>
+
+        <section id="meteo-temperatures" class="flex flex-column">
+            <span class="temp-actuelle">
+                {{ temp_actuelle }}&deg;<span v-if="metrique">C</span><span v-if="imperial">F</span>
+            </span>
+        </section>
+
+        <section id="meteo-conditions">
+            <img :src="icone" />
+            <div class="flex flex-column">
+                <span class="cond-description">
+                    {{ meteo.description }}
+                </span>
+                <span class="temp-ressentie">
+                    T&deg; ressentie {{ temp_ressentie }}&deg;<span v-if="metrique">C</span><span v-if="imperial">F</span>
+                </span>
+            </div>
+        </section>
+
+        <section id="meteo-autredetails" class="flex">
+            <div class="flex flex-column">
+                <h5>Soleil</h5>
+                <h6>
+                    Lever
+                </h6>
+                <div>
+                    <span>
+                        {{ lever }}
+                    </span>
+                    <span class="small">
+                        <span v-if="fuseauH != 0">
+                            {{ fuseauH }}h 
+                        </span>
+                        UTC
+                    </span>
+                </div>
+                <h6>
+                    Coucher
+                </h6>
+                <div>
+                    <span>
+                        {{ coucher }}
+                    </span>
+                    <span class="small">
+                        <span v-if="fuseauH != 0">
+                            {{ fuseauH }}h
+                        </span>
+                        UTC
+                    </span>
+                </div>
+            </div>
+            <div class="flex flex-column">
+                <h5>Vents</h5>
+                <h6>
+                    Vents
+                </h6>
+                <span>
+                    {{ vents }}  
+                    <span v-if="metrique">
+                        km/h
+                    </span>
+                    <span v-if="imperial">
+                        mph
+                    </span>                    
+                    {{ dir_vents }}
+                </span>
+                <div v-if="rafales">
+                    <h6>
+                        Rafales
+                    </h6>
+                    <span>
+                        {{ rafales }} 
+                        <span v-if="metrique">
+                            km/h
+                        </span>
+                        <span v-if="imperial">
+                            mph
+                        </span>
+                    </span>
+                </div>
+            </div>
+            <div class="flex flex-column">
+                <h5>Précipitations</h5>
+                <div v-if="neige || pluie" class="flex flex-column">
+                    <h6>
+                        Derniere heure
+                    </h6>
+                    <div v-if="neige"  class="flex flex-column">
+                        <div class="prec-neige">
+                            <div class="flex">
+                                <svg id="prec-neige-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-cloud-snow"><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"></path><line x1="8" y1="16" x2="8.01" y2="16"></line><line x1="8" y1="20" x2="8.01" y2="20"></line><line x1="12" y1="18" x2="12.01" y2="18"></line><line x1="12" y1="22" x2="12.01" y2="22"></line><line x1="16" y1="16" x2="16.01" y2="16"></line><line x1="16" y1="20" x2="16.01" y2="20"></line></svg>
+                            </div>
+                            <div class="flex flex-column">
+                                <span class="small">
+                                    NEIGE
+                                </span>
+                                <span>
+                                    {{ neige }} cm
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div v-if="pluie" class="flex flex-column">
+                        <div v-if="pluie" class="prec-pluie">
+                            <div class="flex">
+                                <svg id="prec-pluie-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-cloud-rain"><line x1="16" y1="13" x2="16" y2="21"></line><line x1="8" y1="13" x2="8" y2="21"></line><line x1="12" y1="15" x2="12" y2="23"></line><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"></path></svg>
+                            </div>
+                            <div class="flex flex-column">
+                                <span class="small">
+                                    PLUIE
+                                </span>
+                                <span>
+                                    {{ pluie }} mm
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-else>
+                    <span class="details-pasprec">
+                        Rien à signaler !
+                    </span>
+                </div>
+            </div>
+        </section>
+        
+
+    </div>
+</main>
