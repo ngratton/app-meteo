@@ -12,8 +12,8 @@ export default Vue.component('meteo', template({
         return {
             metrique: true,
             imperial: false,
-            ville: '',
-            pays: '',
+            ville: this.$route.params.ville,
+            pays: this.$route.params.pays,
             fuseauH: 0,
             fuseau: 0,
             temp_actuelle: 0,
@@ -53,8 +53,8 @@ export default Vue.component('meteo', template({
                 // Si la ville est trouvée, attribution des valeurs aux différents variables Vue
                 if(data.cod != 404) {
                     this.objMeteo = data
-                    this.ville = data.name
-                    this.pays = data.sys.country
+                    // this.ville = data.name
+                    // this.pays = data.sys.country
                     this.temp_actuelle = this.convertT(data.main.temp)
                     this.temp_ressentie = this.convertT(data.main.feels_like)
                     this.vents = this.convertSpeed(data.wind.speed)
