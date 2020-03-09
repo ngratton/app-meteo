@@ -100,9 +100,9 @@ export default Vue.component('meteo', template({
         },
         convertSpeed(s) {
             if (this.metrique) {
-                return Math.round(s * 3,6)
+                return Math.round(s * 3.6)
             } else {
-                return Math.round(s * 2,237)
+                return Math.round(s * 2.237)
             }
         },
         convertPrec(m) {
